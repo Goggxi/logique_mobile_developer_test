@@ -1,5 +1,6 @@
-class Meta<T> {
-  final List<T> data;
+
+class Meta {
+  final dynamic data;
   final int total;
   final int page;
   final int limit;
@@ -12,20 +13,20 @@ class Meta<T> {
   });
 
   factory Meta.empty() => Meta(
-        data: [],
+        data: null,
         total: 0,
         page: 0,
         limit: 0,
       );
 
-  factory Meta.fromJson(Map<String, dynamic> json) => Meta(
-        data: json["data"] != null
-            ? List<T>.from(json["data"].map((x) => x))
-            : [],
-        total: json["total"] ?? 0,
-        page: json["page"] ?? 0,
-        limit: json["limit"] ?? 0,
-      );
+  factory Meta.fromJson(Map<String, dynamic> json) {
+    return Meta(
+      data: json["data"],
+      total: json["total"] ?? 0,
+      page: json["page"] ?? 0,
+      limit: json["limit"] ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "data": data,

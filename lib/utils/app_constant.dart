@@ -8,4 +8,6 @@ class AppConstant {
   static const String userUrl = "/user";
   static const String userDetailUrl = "/user/:userId";
   static const String userPostUrl = "/user/:userId/post";
+
+  static const int limit = 20;
 }

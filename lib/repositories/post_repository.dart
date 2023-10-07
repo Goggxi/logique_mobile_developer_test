@@ -5,15 +5,19 @@ import 'package:logique_mobile_developer_test/models/models.dart';
 import 'package:logique_mobile_developer_test/utils/utils.dart';
 
 abstract class PostRepository {
-  Future<(Failure?, Meta<Post>)> posts({
-    required String page,
-    required String limit,
+  Future<(Failure?, List<Post>)> posts({
+    required int page,
+    required int limit,
   });
-  Future<(Failure?, Meta<Post>)> postTags({required String tag});
-  Future<(Failure?, Meta<Comment>)> comments({
+  Future<(Failure?, List<Post>)> postTag({
+    required String tag,
+    required int page,
+    required int limit,
+  });
+  Future<(Failure?, List<Comment>)> comments({
     required String postId,
-    required String page,
-    required String limit,
+    required int page,
+    required int limit,
   });
 }
 
@@ -24,10 +28,10 @@ class PostRepositoryImpl extends PostRepository {
   PostRepositoryImpl(this._httpClient);
 
   @override
-  Future<(Failure?, Meta<Comment>)> comments({
+  Future<(Failure?, List<Comment>)> comments({
     required String postId,
-    required String page,
-    required String limit,
+    required int page,
+    required int limit,
   }) async {
     final response = await _httpClient.apiRequest(
       url: AppConstant.baseUrl,
@@ -41,36 +45,49 @@ class PostRepositoryImpl extends PostRepository {
     );
 
     if (response.statusCode == 200) {
-      return (null, Meta<Comment>.fromJson(jsonDecode(response.body)));
+      final meta = Meta.fromJson(jsonDecode(response.body));
+      final comments =
+          (meta.data as List).map((e) => Comment.fromJson(e)).toList();
+      return (null, comments);
     } else {
       final message = jsonDecode(response.body)['error'];
       final statusCode = response.statusCode;
-      return (ServerFailure(message, code: statusCode), Meta<Comment>.empty());
+      return (ServerFailure(message, code: statusCode), <Comment>[]);
     }
   }
 
   @override
-  Future<(Failure?, Meta<Post>)> postTags({required String tag}) async {
+  Future<(Failure?, List<Post>)> postTag({
+    required String tag,
+    required int page,
+    required int limit,
+  }) async {
     final response = await _httpClient.apiRequest(
       url: AppConstant.baseUrl,
       apiPath: AppConstant.postTagUrl.replaceAll(':tagId', tag),
       method: RequestMethod.get,
       headers: {'app-id': AppConstant.appId},
+      queryParameter: {
+        'page': page,
+        'limit': limit,
+      },
     );
 
     if (response.statusCode == 200) {
-      return (null, Meta<Post>.fromJson(jsonDecode(response.body)));
+      final meta = Meta.fromJson(jsonDecode(response.body));
+      final posts = (meta.data as List).map((e) => Post.fromJson(e)).toList();
+      return (null, posts);
     } else {
       final message = jsonDecode(response.body)['error'];
       final statusCode = response.statusCode;
-      return (ServerFailure(message, code: statusCode), Meta<Post>.empty());
+      return (ServerFailure(message, code: statusCode), <Post>[]);
     }
   }
 
   @override
-  Future<(Failure?, Meta<Post>)> posts({
-    required String page,
-    required String limit,
+  Future<(Failure?, List<Post>)> posts({
+    required int page,
+    required int limit,
   }) async {
     final response = await _httpClient.apiRequest(
       url: AppConstant.baseUrl,
@@ -84,11 +101,13 @@ class PostRepositoryImpl extends PostRepository {
     );
 
     if (response.statusCode == 200) {
-      return (null, Meta<Post>.fromJson(jsonDecode(response.body)));
+      final meta = Meta.fromJson(jsonDecode(response.body));
+      final posts = (meta.data as List).map((e) => Post.fromJson(e)).toList();
+      return (null, posts);
     } else {
       final message = jsonDecode(response.body)['error'];
       final statusCode = response.statusCode;
-      return (ServerFailure(message, code: statusCode), Meta<Post>.empty());
+      return (ServerFailure(message, code: statusCode), <Post>[]);
     }
   }
 }

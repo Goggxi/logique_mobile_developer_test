@@ -12,9 +12,15 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:http/http.dart' as _i3;
 import 'package:injectable/injectable.dart' as _i2;
-import 'package:logique_mobile_developer_test/di/modules.dart' as _i8;
+import 'package:logique_mobile_developer_test/di/modules.dart' as _i11;
+import 'package:logique_mobile_developer_test/presentaions/blocs/post/post_bloc.dart'
+    as _i8;
+import 'package:logique_mobile_developer_test/presentaions/blocs/user/user_bloc.dart'
+    as _i10;
 import 'package:logique_mobile_developer_test/repositories/post_repository.dart'
     as _i5;
+import 'package:logique_mobile_developer_test/repositories/repository.dart'
+    as _i9;
 import 'package:logique_mobile_developer_test/repositories/user_repository.dart'
     as _i7;
 import 'package:logique_mobile_developer_test/utils/http_client.dart' as _i4;
@@ -38,8 +44,10 @@ extension GetItInjectableX on _i1.GetIt {
         () => _i5.PostRepositoryImpl(gh<_i6.HttpClient>()));
     gh.lazySingleton<_i7.UserRepository>(
         () => _i7.UserRepositoryImpl(gh<_i6.HttpClient>()));
+    gh.factory<_i8.PostBloc>(() => _i8.PostBloc(gh<_i9.PostRepository>()));
+    gh.factory<_i10.UserBloc>(() => _i10.UserBloc(gh<_i9.UserRepository>()));
     return this;
   }
 }
 
-class _$RegisterModule extends _i8.RegisterModule {}
+class _$RegisterModule extends _i11.RegisterModule {}

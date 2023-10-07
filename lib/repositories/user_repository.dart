@@ -5,17 +5,17 @@ import 'package:logique_mobile_developer_test/models/models.dart';
 import 'package:logique_mobile_developer_test/utils/utils.dart';
 
 abstract class UserRepository {
-  Future<(Failure?, Meta<User>)> users({
-    required String page,
-    required String limit,
+  Future<(Failure?, List<User>)> users({
+    required int page,
+    required int limit,
   });
   Future<(Failure?, UserDetail)> userDetail({
     required String userId,
   });
-  Future<(Failure?, Meta<Post>)> userPosts({
+  Future<(Failure?, List<Post>)> userPosts({
     required String userId,
-    required String page,
-    required String limit,
+    required int page,
+    required int limit,
   });
 }
 
@@ -44,10 +44,10 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<(Failure?, Meta<Post>)> userPosts({
+  Future<(Failure?, List<Post>)> userPosts({
     required String userId,
-    required String page,
-    required String limit,
+    required int page,
+    required int limit,
   }) async {
     final response = await _httpClient.apiRequest(
       url: AppConstant.baseUrl,
@@ -61,18 +61,20 @@ class UserRepositoryImpl implements UserRepository {
     );
 
     if (response.statusCode == 200) {
-      return (null, Meta<Post>.fromJson(jsonDecode(response.body)));
+      final meta = Meta.fromJson(jsonDecode(response.body));
+      final posts = (meta.data as List).map((e) => Post.fromJson(e)).toList();
+      return (null, posts);
     } else {
       final message = jsonDecode(response.body)['error'];
       final statusCode = response.statusCode;
-      return (ServerFailure(message, code: statusCode), Meta<Post>.empty());
+      return (ServerFailure(message, code: statusCode), <Post>[]);
     }
   }
 
   @override
-  Future<(Failure?, Meta<User>)> users({
-    required String page,
-    required String limit,
+  Future<(Failure?, List<User>)> users({
+    required int page,
+    required int limit,
   }) async {
     final response = await _httpClient.apiRequest(
       url: AppConstant.baseUrl,
@@ -86,11 +88,13 @@ class UserRepositoryImpl implements UserRepository {
     );
 
     if (response.statusCode == 200) {
-      return (null, Meta<User>.fromJson(jsonDecode(response.body)));
+      final meta = Meta.fromJson(jsonDecode(response.body));
+      final users = (meta.data as List).map((e) => User.fromJson(e)).toList();
+      return (null, users);
     } else {
       final message = jsonDecode(response.body)['error'];
       final statusCode = response.statusCode;
-      return (ServerFailure(message, code: statusCode), Meta<User>.empty());
+      return (ServerFailure(message, code: statusCode), <User>[]);
     }
   }
 }
