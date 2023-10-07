@@ -13,4 +13,7 @@ class AppConstant {
 
   static const String assetPath = "assets/images";
   static const String imageLogo = "$assetPath/logo.png";
+
+  static const String animsPath = "assets/anims";
+  static const String animLike = "$animsPath/like.json";
 }

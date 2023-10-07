@@ -35,7 +35,7 @@ class _FavoritePageState extends State<FavoritePage>
       bloc: _savedPostCubit,
       builder: (_, state) {
         return Scaffold(
-          appBar: AppBarPrimary(),
+          appBar: AppBarPrimary(context: context),
           body: Builder(
             builder: (_) {
               if (state.isLoading) {
@@ -50,7 +50,8 @@ class _FavoritePageState extends State<FavoritePage>
                 slivers: [
                   if (_tag.isNotEmpty)
                     SliverAppBar(
-                      backgroundColor: Colors.white,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       pinned: true,
                       title: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AppImage extends StatelessWidget {
@@ -24,16 +25,16 @@ class AppImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
-      child: Image.network(
-        url,
+      child: CachedNetworkImage(
+        imageUrl: url,
         width: width,
         height: height,
         fit: fit,
-        loadingBuilder: (_, child, progress) {
-          if (progress == null) return child;
+        cacheKey: url,
+        placeholder: (_, __) {
           return _buildContainer(context, icon: Icons.image_rounded);
         },
-        errorBuilder: (_, __, ___) {
+        errorWidget: (_, __, ___) {
           return _buildContainer(context, icon: Icons.broken_image_rounded);
         },
       ),

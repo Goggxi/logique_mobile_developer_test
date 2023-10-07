@@ -50,7 +50,7 @@ class _UserPageState extends State<UserPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBarPrimary(),
+      appBar: AppBarPrimary(context: context),
       body: BlocListener<UserBloc, UserState>(
         bloc: _userBloc,
         listener: (_, state) {

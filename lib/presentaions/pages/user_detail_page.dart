@@ -112,30 +112,33 @@ class _UserDetailPageState extends State<UserDetailPage> {
       appBar: AppBar(
         titleSpacing: 0,
         toolbarHeight: 64,
-        title: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(right: 12),
-          height: 48,
-          child: TextField(
-            controller: _searchController,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 14,
-                horizontal: 12,
+        title: Visibility(
+          visible: !_fristLoad,
+          child: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: 12),
+            height: 48,
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 12,
+                ),
+                isDense: true,
+                hintText: "Search post by description",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                ),
               ),
-              isDense: true,
-              hintText: "Search post by description",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-              ),
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  _setSearch(value);
+                } else {
+                  _resetSearch();
+                }
+              },
             ),
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                _setSearch(value);
-              } else {
-                _resetSearch();
-              }
-            },
           ),
         ),
       ),
@@ -184,7 +187,16 @@ class _UserDetailPageState extends State<UserDetailPage> {
           }
         },
         child: _fristLoad
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).highlightColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const CircularProgressIndicator(),
+                ),
+              )
             : RefreshIndicator(
                 onRefresh: () async {
                   _clear();
@@ -197,7 +209,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   slivers: [
                     if (_tag.isNotEmpty)
                       SliverAppBar(
-                        backgroundColor: Colors.white,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         pinned: true,
                         automaticallyImplyLeading: false,
                         title: SingleChildScrollView(

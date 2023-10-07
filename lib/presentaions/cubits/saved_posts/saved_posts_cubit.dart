@@ -16,6 +16,7 @@ class SavedPostsCubit extends Cubit<SavedPostsState> {
   void fetchSavedPosts() async {
     emit(state.copyWith(isLoading: true));
     final result = await _postRepository.getSavedPosts();
+    await Future.delayed(const Duration(milliseconds: 50));
     if (result.$1 != null) {
       emit(state.copyWith(
         isLoading: false,
@@ -57,7 +58,7 @@ class SavedPostsCubit extends Cubit<SavedPostsState> {
     emit(state.copyWith(isLoading: true));
     _postRepository.getSavedPosts().then(
       (v) async {
-        await Future.delayed(const Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 50));
         if (v.$1 != null) {
           emit(state.copyWith(
             isLoading: false,

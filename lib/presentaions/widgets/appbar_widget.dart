@@ -4,6 +4,7 @@ import 'package:logique_mobile_developer_test/utils/utils.dart';
 class AppBarPrimary extends AppBar {
   AppBarPrimary({
     Key? key,
+    required BuildContext context,
   }) : super(
           key: key,
           centerTitle: true,
@@ -16,10 +17,10 @@ class AppBarPrimary extends AppBar {
                 height: 18,
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 "Social",
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.bold,
                 ),

@@ -68,7 +68,7 @@ class _PostPageState extends State<PostPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBarPrimary(),
+      appBar: AppBarPrimary(context: context),
       body: BlocListener<PostBloc, PostState>(
         bloc: _postBloc,
         listener: (_, state) {
@@ -160,7 +160,8 @@ class _PostPageState extends State<PostPage>
                 slivers: [
                   if (_tag.isNotEmpty)
                     SliverAppBar(
-                      backgroundColor: Colors.white,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       pinned: true,
                       title: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
