@@ -71,60 +71,64 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LOGIQUE Social',
-      debugShowCheckedModeBanner: false,
-      supportedLocales: const [Locale('id', 'ID')],
-      localizationsDelegates: const [
-        GlobalWidgetsLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate
-      ],
-      theme: ThemeData.light(useMaterial3: true).copyWith(
-        colorScheme: ColorScheme.light(
-          primary: Colors.blueGrey,
-          secondary: Colors.blueGrey.withOpacity(0.2),
-          onSecondary: Colors.blueGrey.shade900,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        textTheme: GoogleFonts.rubikTextTheme(ThemeData.light().textTheme),
-      ),
-      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
-        textTheme: GoogleFonts.rubikTextTheme(ThemeData.dark().textTheme),
-      ),
-      home: WillPopScope(
-        onWillPop: () => pagePop(context),
-        child: Scaffold(
-          body: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: const [
-              UserPage(),
-              PostPage(),
-              FavoritePage(),
-            ],
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: MaterialApp(
+        title: 'LOGIQUE Social',
+        debugShowCheckedModeBanner: false,
+        supportedLocales: const [Locale('id', 'ID')],
+        localizationsDelegates: const [
+          GlobalWidgetsLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        theme: ThemeData.light(useMaterial3: true).copyWith(
+          colorScheme: ColorScheme.light(
+            primary: Colors.blueGrey,
+            secondary: Colors.blueGrey.withOpacity(0.2),
+            onSecondary: Colors.blueGrey.shade900,
           ),
-          bottomNavigationBar: NavigationBar(
-            animationDuration: const Duration(milliseconds: 1000),
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.people_outline),
-                selectedIcon: Icon(Icons.people),
-                label: 'User',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.dataset_outlined),
-                selectedIcon: Icon(Icons.dataset),
-                label: 'Post',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.favorite_outline),
-                selectedIcon: Icon(Icons.favorite),
-                label: 'Favorite',
-              ),
-            ],
-            selectedIndex: _pageIndex,
-            onDestinationSelected: pagePush,
+          scaffoldBackgroundColor: Colors.white,
+          textTheme: GoogleFonts.rubikTextTheme(ThemeData.light().textTheme),
+        ),
+        darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+          textTheme: GoogleFonts.rubikTextTheme(ThemeData.dark().textTheme),
+        ),
+        home: WillPopScope(
+          onWillPop: () => pagePop(context),
+          child: Scaffold(
+            body: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: const [
+                UserPage(),
+                PostPage(),
+                FavoritePage(),
+              ],
+            ),
+            bottomNavigationBar: NavigationBar(
+              animationDuration: const Duration(milliseconds: 1000),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.people_outline),
+                  selectedIcon: Icon(Icons.people),
+                  label: 'User',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.dataset_outlined),
+                  selectedIcon: Icon(Icons.dataset),
+                  label: 'Post',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.favorite_outline),
+                  selectedIcon: Icon(Icons.favorite),
+                  label: 'Favorite',
+                ),
+              ],
+              selectedIndex: _pageIndex,
+              onDestinationSelected: pagePush,
+            ),
           ),
         ),
       ),

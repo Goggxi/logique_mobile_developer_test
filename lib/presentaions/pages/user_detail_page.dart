@@ -18,9 +18,10 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage> {
   final _userBloc = getIt<UserBloc>();
   final _scrollController = ScrollController();
-  UserDetail _user = UserDetail.empty();
+  final _searchController = TextEditingController();
   final List<Post> _posts = [];
   final List<Post> _postsTemp = [];
+  UserDetail _user = UserDetail.empty();
   int _currentPage = 0;
   bool _hasMoreData = true;
   bool _fristLoad = true;
@@ -41,12 +42,30 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   void _setTag(String tag) {
+    _resetSearch();
     _tag = tag;
     _posts.clear();
     _posts.addAll(_postsTemp);
     final filter = _posts.where((e) => e.tags.contains(tag)).toList();
     _posts.clear();
     _posts.addAll(filter);
+    setState(() {});
+  }
+
+  void _setSearch(String search) {
+    _resetTag();
+    _posts.clear();
+    _posts.addAll(_postsTemp);
+    final filter = _posts.where((e) => e.text.contains(search)).toList();
+    _posts.clear();
+    _posts.addAll(filter);
+    setState(() {});
+  }
+
+  void _resetSearch() {
+    _searchController.clear();
+    _posts.clear();
+    _posts.addAll(_postsTemp);
     setState(() {});
   }
 
@@ -83,6 +102,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -90,8 +110,34 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Detail"),
-        centerTitle: true,
+        titleSpacing: 0,
+        toolbarHeight: 64,
+        title: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.only(right: 12),
+          height: 48,
+          child: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 12,
+              ),
+              isDense: true,
+              hintText: "Search post by description",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                _setSearch(value);
+              } else {
+                _resetSearch();
+              }
+            },
+          ),
+        ),
       ),
       body: BlocListener<UserBloc, UserState>(
         bloc: _userBloc,
@@ -143,6 +189,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 onRefresh: () async {
                   _clear();
                   _resetTag();
+                  _resetSearch();
                   _fetchUser();
                   _fetchPost();
                 },
