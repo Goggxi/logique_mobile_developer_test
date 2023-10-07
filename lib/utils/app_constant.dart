@@ -10,4 +10,7 @@ class AppConstant {
   static const String userPostUrl = "/user/:userId/post";
 
   static const int limit = 20;
+
+  static const String assetPath = "assets/images";
+  static const String imageLogo = "$assetPath/logo.png";
 }

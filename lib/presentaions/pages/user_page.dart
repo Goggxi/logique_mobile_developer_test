@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logique_mobile_developer_test/di/di.dart';
 import 'package:logique_mobile_developer_test/models/models.dart';
 import 'package:logique_mobile_developer_test/presentaions/blocs/blocs.dart';
-import 'package:logique_mobile_developer_test/presentaions/pages/user_detail.dart';
+import 'package:logique_mobile_developer_test/presentaions/pages/user_detail_page.dart';
+import 'package:logique_mobile_developer_test/presentaions/widgets/widgets.dart';
 import 'package:logique_mobile_developer_test/utils/utils.dart';
 
 class UserPage extends StatefulWidget {
@@ -49,11 +50,7 @@ class _UserPageState extends State<UserPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("User"),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: AppBarPrimary(),
       body: BlocListener<UserBloc, UserState>(
         bloc: _userBloc,
         listener: (_, state) {
@@ -91,7 +88,7 @@ class _UserPageState extends State<UserPage>
           }
         },
         child: _users.isEmpty && !_hasMoreData
-            ? const SizedBox(child: Center(child: Text('Belum ada data')))
+            ? const SizedBox(child: Center(child: Text('No Data')))
             : _fristLoad
                 // TODO: Add shimmer loading
                 ? const Center(child: CircularProgressIndicator())
@@ -142,9 +139,9 @@ class _BuildListUser extends StatelessWidget {
       sliver: SliverGrid.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
+          mainAxisExtent: 286,
         ),
         itemBuilder: (context, index) {
           if (users.isEmpty && hasMoreData) {
@@ -156,49 +153,92 @@ class _BuildListUser extends StatelessWidget {
           if (index == users.length && hasMoreData) {
             return const Center(child: CircularProgressIndicator());
           } else if (index == users.length && !hasMoreData) {
-            return const Card(
+            return Card(
               margin: EdgeInsets.zero,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.warning, size: 40),
-                  SizedBox(height: 10),
-                  Text("data sudah habis"),
+                  Icon(
+                    Icons.person_off_outlined,
+                    size: 40,
+                    color: Colors.grey[500],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "no more data",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
                 ],
               ),
             );
           }
 
           final user = users[index];
-          return Card(
-            margin: EdgeInsets.zero,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => UserDetailPage(user: user)),
-                );
-              },
+          return _BuildUserItem(user: user);
+        },
+        itemCount: users.length + 1,
+      ),
+    );
+  }
+}
+
+class _BuildUserItem extends StatelessWidget {
+  const _BuildUserItem({required this.user});
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => UserDetailPage(user: user)),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppImage(
+              url: user.picture,
+              radius: 16,
+              width: double.infinity,
+              height: 180,
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user.picture),
-                  ),
-                  const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 1.5,
                     ),
-                    child: Text(user.title, textAlign: TextAlign.center),
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlueAccent[100],
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      user.title,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Text(
                     "${user.firstName} ${user.lastName}",
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -206,9 +246,8 @@ class _BuildListUser extends StatelessWidget {
                 ],
               ),
             ),
-          );
-        },
-        itemCount: users.length + 1,
+          ],
+        ),
       ),
     );
   }

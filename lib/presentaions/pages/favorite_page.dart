@@ -11,8 +11,10 @@ class FavoritePage extends StatefulWidget {
   State<FavoritePage> createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
+class _FavoritePageState extends State<FavoritePage>
+    with AutomaticKeepAliveClientMixin {
   final _savedPostCubit = getIt<SavedPostsCubit>();
+  String _tag = "";
 
   @override
   void initState() {
@@ -20,44 +22,94 @@ class _FavoritePageState extends State<FavoritePage> {
     super.initState();
   }
 
+  void _setTag(String tag) {
+    _tag = tag;
+    _savedPostCubit.filterByTag(tag);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocBuilder<SavedPostsCubit, SavedPostsState>(
       bloc: _savedPostCubit,
       builder: (_, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text("Favorite"),
-            centerTitle: true,
-            elevation: 0,
-          ),
+          appBar: AppBarPrimary(),
           body: state.posts.isEmpty
-              ? const Center(child: Text("Belum ada data"))
+              ? const Center(child: Text("no saved posts"))
               : state.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemBuilder: (_, i) {
-                        final post = state.posts[i];
-                        return PostItemWidget(
-                          post: post,
-                          isPost: false,
-                          fetchTag: (_) {},
-                          isLiked: state.posts.any((e) => e.id == post.id),
-                          onLike: () {
-                            if (state.posts.any((e) => e.id == post.id)) {
-                              getIt<SavedPostsCubit>().unsavePost(post);
-                            } else {
-                              getIt<SavedPostsCubit>().savePost(post);
-                            }
-                          },
-                        );
-                      },
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemCount: state.posts.length,
+                  : CustomScrollView(
+                      slivers: [
+                        if (_tag.isNotEmpty)
+                          SliverAppBar(
+                            backgroundColor: Colors.white,
+                            pinned: true,
+                            title: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  const Text('Tag : '),
+                                  Chip(
+                                    label: Text(
+                                      _tag,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Colors.lightBlueAccent[100],
+                                    deleteIcon: const Icon(
+                                      Icons.close,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                                    onDeleted: () {
+                                      setState(() => _tag = "");
+                                      _savedPostCubit.fetchSavedPosts();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        SliverPadding(
+                          padding: const EdgeInsets.all(12),
+                          sliver: SliverList.separated(
+                            itemBuilder: (_, i) {
+                              final post = state.posts[i];
+                              return PostItemWidget(
+                                post: post,
+                                isTagActive: true,
+                                fetchTag: _setTag,
+                                tag: _tag,
+                                isLiked: state.posts.any(
+                                  (e) => e.id == post.id,
+                                ),
+                                onLike: () {
+                                  if (state.posts.any((e) => e.id == post.id)) {
+                                    getIt<SavedPostsCubit>().unsavePost(post);
+                                  } else {
+                                    getIt<SavedPostsCubit>().savePost(post);
+                                  }
+                                },
+                              );
+                            },
+                            separatorBuilder: (_, __) => const SizedBox(
+                              height: 12,
+                            ),
+                            itemCount: state.posts.length,
+                          ),
+                        ),
+                      ],
                     ),
         );
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

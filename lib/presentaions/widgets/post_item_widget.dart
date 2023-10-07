@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:logique_mobile_developer_test/models/models.dart';
+import 'package:logique_mobile_developer_test/presentaions/widgets/widgets.dart';
 import 'package:logique_mobile_developer_test/utils/utils.dart';
 
 class PostItemWidget extends StatelessWidget {
   const PostItemWidget({
     super.key,
     required this.post,
-    required this.isPost,
+    required this.isTagActive,
     this.tag = "",
     this.fetchTag,
     this.onLike,
@@ -14,7 +15,7 @@ class PostItemWidget extends StatelessWidget {
   });
 
   final Post post;
-  final bool isPost;
+  final bool isTagActive;
   final String tag;
   final void Function(String)? fetchTag;
   final void Function()? onLike;
@@ -31,9 +32,11 @@ class PostItemWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(post.owner.picture),
+                AppImage(
+                  url: post.owner.picture,
+                  radius: 100,
+                  width: 50,
+                  height: 50,
                 ),
                 const SizedBox(width: 10),
                 Flexible(
@@ -62,7 +65,11 @@ class PostItemWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Image.network(post.image, width: double.infinity),
+            AppImage(
+              url: post.image,
+              heightLoading: 200,
+              width: double.infinity,
+            ),
             const SizedBox(height: 10),
             Wrap(
               alignment: WrapAlignment.start,
@@ -70,13 +77,19 @@ class PostItemWidget extends StatelessWidget {
               children: post.tags
                   .map(
                     (e) => InkWell(
-                      onTap: !isPost ? null : () => fetchTag!(e),
+                      onTap: !isTagActive ? null : () => fetchTag!(e),
                       child: Chip(
-                        label: Text(e),
-                        labelStyle: tag == e
-                            ? const TextStyle(color: Colors.white)
-                            : null,
-                        backgroundColor: tag == e ? Colors.blue : null,
+                        label: Text(
+                          e,
+                          style: tag == e
+                              ? const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                )
+                              : null,
+                        ),
+                        backgroundColor:
+                            tag == e ? Colors.lightBlueAccent[100] : null,
                       ),
                     ),
                   )
@@ -94,11 +107,11 @@ class PostItemWidget extends StatelessWidget {
                 children: [
                   Icon(
                     isLiked ? Icons.favorite : Icons.favorite_border,
-                    size: 25,
+                    size: 32,
                     color: isLiked ? Colors.red : null,
                   ),
                   const SizedBox(width: 5),
-                  Text(post.likes.toString()),
+                  Text((post.likes + (isLiked ? 1 : 0)).toString()),
                 ],
               ),
             ),

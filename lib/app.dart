@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:logique_mobile_developer_test/di/di.dart';
 import 'package:logique_mobile_developer_test/presentaions/cubits/cubits.dart';
 
@@ -71,6 +72,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'LOGIQUE Social',
       debugShowCheckedModeBanner: false,
       supportedLocales: const [Locale('id', 'ID')],
       localizationsDelegates: const [
@@ -78,6 +80,18 @@ class _MainAppState extends State<MainApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate
       ],
+      theme: ThemeData.light(useMaterial3: true).copyWith(
+        colorScheme: ColorScheme.light(
+          primary: Colors.blueGrey,
+          secondary: Colors.blueGrey.withOpacity(0.2),
+          onSecondary: Colors.blueGrey.shade900,
+        ),
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: GoogleFonts.rubikTextTheme(ThemeData.light().textTheme),
+      ),
+      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+        textTheme: GoogleFonts.rubikTextTheme(ThemeData.dark().textTheme),
+      ),
       home: WillPopScope(
         onWillPop: () => pagePop(context),
         child: Scaffold(

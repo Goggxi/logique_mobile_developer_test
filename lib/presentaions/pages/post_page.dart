@@ -33,7 +33,8 @@ class _PostPageState extends State<PostPage>
       _tag = tag;
     });
     _postBloc.add(
-        PostFetchTag(tag: tag, page: _currentPage, limit: AppConstant.limit));
+      PostFetchTag(tag: tag, page: _currentPage, limit: AppConstant.limit),
+    );
   }
 
   void _resetData() {
@@ -67,11 +68,7 @@ class _PostPageState extends State<PostPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Post"),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: AppBarPrimary(),
       body: BlocListener<PostBloc, PostState>(
         bloc: _postBloc,
         listener: (_, state) {
@@ -140,7 +137,7 @@ class _PostPageState extends State<PostPage>
           }
         },
         child: _posts.isEmpty && !_hasMoreData
-            ? const SizedBox(child: Center(child: Text('Belum ada data')))
+            ? const SizedBox(child: Center(child: Text('no posts')))
             : _fristLoad
                 // TODO: Add shimmer loading
                 ? const Center(child: CircularProgressIndicator())
@@ -160,14 +157,34 @@ class _PostPageState extends State<PostPage>
                           SliverAppBar(
                             backgroundColor: Colors.white,
                             pinned: true,
-                            title: Chip(
-                              label: Text(_tag),
-                              deleteIcon: const Icon(Icons.close),
-                              onDeleted: () {
-                                setState(() => _tag = "");
-                                _resetData();
-                                _fetchData();
-                              },
+                            title: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  const Text('Tag : '),
+                                  Chip(
+                                    label: Text(
+                                      _tag,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Colors.lightBlueAccent[100],
+                                    deleteIcon: const Icon(
+                                      Icons.close,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                                    onDeleted: () {
+                                      setState(() => _tag = "");
+                                      _resetData();
+                                      _fetchData();
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         PostListWidget(

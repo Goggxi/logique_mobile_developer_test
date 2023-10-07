@@ -52,4 +52,22 @@ class SavedPostsCubit extends Cubit<SavedPostsState> {
   bool isSaved(Post post) {
     return state.posts.any((e) => e.id == post.id);
   }
+
+  void filterByTag(String tag) {
+    emit(state.copyWith(isLoading: true));
+    _postRepository.getSavedPosts().then((v) {
+      if (v.$1 != null) {
+        emit(state.copyWith(
+          isLoading: false,
+          failure: v.$1,
+        ));
+      } else {
+        final newPosts = v.$2.where((e) => e.tags.contains(tag)).toList();
+        emit(state.copyWith(
+          isLoading: false,
+          posts: newPosts,
+        ));
+      }
+    });
+  }
 }

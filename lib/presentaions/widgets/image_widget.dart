@@ -5,9 +5,11 @@ class AppImage extends StatelessWidget {
     super.key,
     required this.url,
     this.fit = BoxFit.cover,
-    this.radius = 16,
+    this.radius = 10,
     this.width,
     this.height,
+    this.widthLoading,
+    this.heightLoading,
   });
 
   final String url;
@@ -15,6 +17,8 @@ class AppImage extends StatelessWidget {
   final double radius;
   final double? width;
   final double? height;
+  final double? widthLoading;
+  final double? heightLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +44,8 @@ class AppImage extends StatelessWidget {
     final highlightColor = Theme.of(context).highlightColor;
     final disabledColor = Theme.of(context).disabledColor;
     return Container(
-      width: width,
-      height: height,
+      width: widthLoading ?? width,
+      height: heightLoading ?? height,
       color: highlightColor,
       child: Center(child: Icon(icon, color: disabledColor)),
     );

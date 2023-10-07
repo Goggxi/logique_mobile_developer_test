@@ -14,7 +14,7 @@ class PostListWidget extends StatelessWidget {
     required this.hasMoreData,
     required this.fetchTag,
     this.tag = "",
-    this.isPost = true,
+    this.isTagActive = true,
   });
 
   final ScrollController scrollController;
@@ -22,7 +22,7 @@ class PostListWidget extends StatelessWidget {
   final bool hasMoreData;
   final void Function(String) fetchTag;
   final String tag;
-  final bool isPost;
+  final bool isTagActive;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class PostListWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 10),
-                Text("data sudah ditampilkan semua"),
+                Text("No more data"),
                 SizedBox(height: 10),
               ],
             );
@@ -56,7 +56,7 @@ class PostListWidget extends StatelessWidget {
             builder: (_, state) {
               return PostItemWidget(
                 post: post,
-                isPost: isPost,
+                isTagActive: isTagActive,
                 tag: tag,
                 fetchTag: fetchTag,
                 isLiked: state.posts.any((e) => e.id == post.id),

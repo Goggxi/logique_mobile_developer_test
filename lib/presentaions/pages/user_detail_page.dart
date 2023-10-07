@@ -20,22 +20,47 @@ class _UserDetailPageState extends State<UserDetailPage> {
   final _scrollController = ScrollController();
   UserDetail _user = UserDetail.empty();
   final List<Post> _posts = [];
+  final List<Post> _postsTemp = [];
   int _currentPage = 0;
   bool _hasMoreData = true;
   bool _fristLoad = true;
+  String _tag = "";
 
   void _fetchUser() {
     _userBloc.add(UserFetchDetail(userId: widget.user.id));
   }
 
   void _fetchPost() {
-    _userBloc.add(UserFetchPost(
-        userId: widget.user.id, page: _currentPage, limit: AppConstant.limit));
+    _userBloc.add(
+      UserFetchPost(
+        userId: widget.user.id,
+        page: _currentPage,
+        limit: AppConstant.limit,
+      ),
+    );
+  }
+
+  void _setTag(String tag) {
+    _tag = tag;
+    _posts.clear();
+    _posts.addAll(_postsTemp);
+    final filter = _posts.where((e) => e.tags.contains(tag)).toList();
+    _posts.clear();
+    _posts.addAll(filter);
+    setState(() {});
+  }
+
+  void _resetTag() {
+    _tag = "";
+    _posts.clear();
+    _posts.addAll(_postsTemp);
+    setState(() {});
   }
 
   void _clear() {
     _user = UserDetail.empty();
     _posts.clear();
+    _postsTemp.clear();
     _currentPage = 0;
     _hasMoreData = true;
     _fristLoad = true;
@@ -67,7 +92,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
       appBar: AppBar(
         title: const Text("User Detail"),
         centerTitle: true,
-        elevation: 0,
       ),
       body: BlocListener<UserBloc, UserState>(
         bloc: _userBloc,
@@ -88,6 +112,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
             if (listState.isNotEmpty) {
               setState(() {
                 _posts.addAll(listState);
+                _postsTemp.addAll(listState);
                 _currentPage++;
               });
             }
@@ -117,11 +142,42 @@ class _UserDetailPageState extends State<UserDetailPage> {
             : RefreshIndicator(
                 onRefresh: () async {
                   _clear();
+                  _resetTag();
                   _fetchUser();
                   _fetchPost();
                 },
                 child: CustomScrollView(
                   slivers: [
+                    if (_tag.isNotEmpty)
+                      SliverAppBar(
+                        backgroundColor: Colors.white,
+                        pinned: true,
+                        automaticallyImplyLeading: false,
+                        title: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              const Text('Tag : '),
+                              Chip(
+                                label: Text(
+                                  _tag,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: Colors.lightBlueAccent[100],
+                                deleteIcon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                                onDeleted: () => _resetTag(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     SliverPadding(
                       padding: const EdgeInsets.all(12),
                       sliver: SliverToBoxAdapter(
@@ -130,7 +186,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     ),
                     const SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
                           "Post",
                           style: TextStyle(
@@ -144,8 +200,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       scrollController: _scrollController,
                       posts: _posts,
                       hasMoreData: _hasMoreData,
-                      fetchTag: (_) {},
-                      isPost: false,
+                      isTagActive: true,
+                      fetchTag: _setTag,
+                      tag: _tag,
                     ),
                   ],
                 ),
@@ -165,32 +222,51 @@ class _UserWidgetSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(user.picture),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+        Row(
+          children: [
+            AppImage(
+              url: user.picture,
+              radius: 100,
+              width: 80,
+              height: 80,
             ),
-            child: Text(user.title, textAlign: TextAlign.center),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Center(
-          child: Text(
-            "${user.firstName} ${user.lastName}",
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            const SizedBox(width: 12),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 1.5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlueAccent[100],
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      user.title,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "${user.firstName} ${user.lastName}",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
         const SizedBox(height: 12),
         Column(
@@ -203,7 +279,7 @@ class _UserWidgetSection extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _textRich("Date Of Birth", user.dateOfBirth.toDDMMMYYYY()),
             const SizedBox(height: 8),
             _textRich("Join From", user.registerDate.toDDMMMYYYY()),
