@@ -63,7 +63,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (result.$1 != null) {
       emit(UserPostError(failure: result.$1!));
     } else {
-      emit(UserPostLoaded(userPost: result.$2));
+      emit(UserPostLoaded(userPosts: result.$2));
     }
   }
 }

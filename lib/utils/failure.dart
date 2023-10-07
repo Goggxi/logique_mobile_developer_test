@@ -11,3 +11,7 @@ abstract class Failure {
 class ServerFailure extends Failure {
   ServerFailure(String message, {int code = 0}) : super(message, code: code);
 }
+
+class CacheFailure extends Failure {
+  CacheFailure(String message, {int code = 0}) : super(message, code: code);
+}

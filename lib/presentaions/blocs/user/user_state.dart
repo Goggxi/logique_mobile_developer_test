@@ -36,9 +36,9 @@ final class UserDetailError extends UserState {
 final class UserPostLoading extends UserState {}
 
 final class UserPostLoaded extends UserState {
-  final List<Post> userPost;
+  final List<Post> userPosts;
 
-  UserPostLoaded({required this.userPost});
+  UserPostLoaded({required this.userPosts});
 }
 
 final class UserPostError extends UserState {

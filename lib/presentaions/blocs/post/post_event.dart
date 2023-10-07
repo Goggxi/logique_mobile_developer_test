@@ -3,14 +3,14 @@ part of 'post_bloc.dart';
 @immutable
 sealed class PostEvent {}
 
-class PostFetch extends PostEvent {
+final class PostFetch extends PostEvent {
   final int page;
   final int limit;
 
   PostFetch({required this.page, required this.limit});
 }
 
-class PostFetchTag extends PostEvent {
+final class PostFetchTag extends PostEvent {
   final String tag;
   final int page;
   final int limit;
@@ -22,7 +22,7 @@ class PostFetchTag extends PostEvent {
   });
 }
 
-class PostFetchComment extends PostEvent {
+final class PostFetchComment extends PostEvent {
   final String postId;
   final int page;
   final int limit;

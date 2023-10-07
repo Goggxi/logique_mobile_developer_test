@@ -91,7 +91,7 @@ class _PostPageState extends State<PostPage>
               setState(() => _hasMoreData = false);
             }
           } else if (state is PostLoaded) {
-            final listState = state.post;
+            final listState = state.posts;
             if (listState.isNotEmpty) {
               setState(() {
                 _posts.addAll(listState);
@@ -107,7 +107,7 @@ class _PostPageState extends State<PostPage>
               setState(() => _fristLoad = false);
             }
           } else if (state is PostTagLoaded) {
-            final listState = state.postTag;
+            final listState = state.posts;
             if (listState.isNotEmpty) {
               setState(() {
                 _posts.addAll(listState);

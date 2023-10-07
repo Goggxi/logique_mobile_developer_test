@@ -83,7 +83,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
             _user = state.userDetail;
             setState(() {});
           } else if (state is UserPostLoaded) {
-            final listState = state.userPost;
+            final listState = state.userPosts;
 
             if (listState.isNotEmpty) {
               setState(() {

@@ -8,9 +8,9 @@ final class PostInitial extends PostState {}
 final class PostLoading extends PostState {}
 
 final class PostLoaded extends PostState {
-  final List<Post> post;
+  final List<Post> posts;
 
-  PostLoaded({required this.post});
+  PostLoaded({required this.posts});
 }
 
 final class PostError extends PostState {
@@ -22,9 +22,9 @@ final class PostError extends PostState {
 final class PostTagLoading extends PostState {}
 
 final class PostTagLoaded extends PostState {
-  final List<Post> postTag;
+  final List<Post> posts;
 
-  PostTagLoaded({required this.postTag});
+  PostTagLoaded({required this.posts});
 }
 
 final class PostTagError extends PostState {
@@ -36,9 +36,9 @@ final class PostTagError extends PostState {
 final class PostCommentLoading extends PostState {}
 
 final class PostCommentLoaded extends PostState {
-  final List<Comment> postComment;
+  final List<Comment> postComments;
 
-  PostCommentLoaded({required this.postComment});
+  PostCommentLoaded({required this.postComments});
 }
 
 final class PostCommentError extends PostState {

@@ -31,7 +31,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (result.$1 != null) {
       emit(PostError(failure: result.$1!));
     } else {
-      emit(PostLoaded(post: result.$2));
+      emit(PostLoaded(posts: result.$2));
     }
   }
 
@@ -49,7 +49,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (result.$1 != null) {
       emit(PostTagError(failure: result.$1!));
     } else {
-      emit(PostTagLoaded(postTag: result.$2));
+      emit(PostTagLoaded(posts: result.$2));
     }
   }
 
@@ -67,7 +67,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     if (result.$1 != null) {
       emit(PostCommentError(failure: result.$1!));
     } else {
-      emit(PostCommentLoaded(postComment: result.$2));
+      emit(PostCommentLoaded(postComments: result.$2));
     }
   }
 }

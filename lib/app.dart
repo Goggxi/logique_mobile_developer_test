@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logique_mobile_developer_test/di/di.dart';
+import 'package:logique_mobile_developer_test/presentaions/cubits/cubits.dart';
 
 import 'presentaions/pages/pages.dart';
 
@@ -11,6 +13,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  final _savedPostCubit = getIt<SavedPostsCubit>();
   final PageController _pageController = PageController(initialPage: 0);
   final List _pageStack = [];
   int _pageIndex = 0;
@@ -57,6 +60,12 @@ class _MainAppState extends State<MainApp> {
     _pageIndex = 0;
     _pageController.jumpToPage(_pageIndex);
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    _savedPostCubit.fetchSavedPosts();
+    super.initState();
   }
 
   @override
