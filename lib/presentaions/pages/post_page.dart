@@ -136,67 +136,73 @@ class _PostPageState extends State<PostPage>
             }
           }
         },
-        child: _posts.isEmpty && !_hasMoreData
-            ? const SizedBox(child: Center(child: Text('no posts')))
-            : _fristLoad
-                // TODO: Add shimmer loading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      _resetData();
-                      if (_tag.isNotEmpty) {
-                        _fetchTag(_tag);
-                        return;
-                      }
-                      _fetchData();
-                    },
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      slivers: [
-                        if (_tag.isNotEmpty)
-                          SliverAppBar(
-                            backgroundColor: Colors.white,
-                            pinned: true,
-                            title: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  const Text('Tag : '),
-                                  Chip(
-                                    label: Text(
-                                      _tag,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    backgroundColor:
-                                        Colors.lightBlueAccent[100],
-                                    deleteIcon: const Icon(
-                                      Icons.close,
-                                      size: 18,
-                                      color: Colors.white,
-                                    ),
-                                    onDeleted: () {
-                                      setState(() => _tag = "");
-                                      _resetData();
-                                      _fetchData();
-                                    },
-                                  ),
-                                ],
+        child: Builder(
+          builder: (_) {
+            if (_fristLoad) {
+              return const PostListLoadingWidget();
+            }
+
+            if (_posts.isEmpty && !_hasMoreData) {
+              return const EmptyWidget(message: "no posts");
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                _resetData();
+                if (_tag.isNotEmpty) {
+                  _fetchTag(_tag);
+                  return;
+                }
+                _fetchData();
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  if (_tag.isNotEmpty)
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      pinned: true,
+                      title: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            const Text('Tag : '),
+                            Chip(
+                              label: Text(
+                                _tag,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
+                              backgroundColor: Colors.lightBlueAccent[100],
+                              deleteIcon: const Icon(
+                                Icons.close,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                              onDeleted: () {
+                                setState(() => _tag = "");
+                                _resetData();
+                                _fetchData();
+                              },
                             ),
-                          ),
-                        PostListWidget(
-                          scrollController: _scrollController,
-                          posts: _posts,
-                          hasMoreData: _hasMoreData,
-                          tag: _tag,
-                          fetchTag: _fetchTag,
+                          ],
                         ),
-                      ],
+                      ),
                     ),
+                  PostListWidget(
+                    scrollController: _scrollController,
+                    posts: _posts,
+                    hasMoreData: _hasMoreData,
+                    tag: _tag,
+                    fetchTag: _fetchTag,
                   ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

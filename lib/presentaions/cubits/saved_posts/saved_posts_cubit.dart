@@ -55,19 +55,22 @@ class SavedPostsCubit extends Cubit<SavedPostsState> {
 
   void filterByTag(String tag) {
     emit(state.copyWith(isLoading: true));
-    _postRepository.getSavedPosts().then((v) {
-      if (v.$1 != null) {
-        emit(state.copyWith(
-          isLoading: false,
-          failure: v.$1,
-        ));
-      } else {
-        final newPosts = v.$2.where((e) => e.tags.contains(tag)).toList();
-        emit(state.copyWith(
-          isLoading: false,
-          posts: newPosts,
-        ));
-      }
-    });
+    _postRepository.getSavedPosts().then(
+      (v) async {
+        await Future.delayed(const Duration(milliseconds: 10));
+        if (v.$1 != null) {
+          emit(state.copyWith(
+            isLoading: false,
+            failure: v.$1,
+          ));
+        } else {
+          final newPosts = v.$2.where((e) => e.tags.contains(tag)).toList();
+          emit(state.copyWith(
+            isLoading: false,
+            posts: newPosts,
+          ));
+        }
+      },
+    );
   }
 }

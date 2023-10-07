@@ -36,75 +36,78 @@ class _FavoritePageState extends State<FavoritePage>
       builder: (_, state) {
         return Scaffold(
           appBar: AppBarPrimary(),
-          body: state.posts.isEmpty
-              ? const Center(child: Text("no saved posts"))
-              : state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : CustomScrollView(
-                      slivers: [
-                        if (_tag.isNotEmpty)
-                          SliverAppBar(
-                            backgroundColor: Colors.white,
-                            pinned: true,
-                            title: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  const Text('Tag : '),
-                                  Chip(
-                                    label: Text(
-                                      _tag,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    backgroundColor:
-                                        Colors.lightBlueAccent[100],
-                                    deleteIcon: const Icon(
-                                      Icons.close,
-                                      size: 18,
-                                      color: Colors.white,
-                                    ),
-                                    onDeleted: () {
-                                      setState(() => _tag = "");
-                                      _savedPostCubit.fetchSavedPosts();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        SliverPadding(
-                          padding: const EdgeInsets.all(12),
-                          sliver: SliverList.separated(
-                            itemBuilder: (_, i) {
-                              final post = state.posts[i];
-                              return PostItemWidget(
-                                post: post,
-                                isTagActive: true,
-                                fetchTag: _setTag,
-                                tag: _tag,
-                                isLiked: state.posts.any(
-                                  (e) => e.id == post.id,
+          body: Builder(
+            builder: (_) {
+              if (state.isLoading) {
+                return const PostListLoadingWidget();
+              }
+
+              if (state.posts.isEmpty) {
+                return const EmptyWidget(message: "no saved posts");
+              }
+
+              return CustomScrollView(
+                slivers: [
+                  if (_tag.isNotEmpty)
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      pinned: true,
+                      title: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            const Text('Tag : '),
+                            Chip(
+                              label: Text(
+                                _tag,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                onLike: () {
-                                  if (state.posts.any((e) => e.id == post.id)) {
-                                    getIt<SavedPostsCubit>().unsavePost(post);
-                                  } else {
-                                    getIt<SavedPostsCubit>().savePost(post);
-                                  }
-                                },
-                              );
-                            },
-                            separatorBuilder: (_, __) => const SizedBox(
-                              height: 12,
+                              ),
+                              backgroundColor: Colors.lightBlueAccent[100],
+                              deleteIcon: const Icon(
+                                Icons.close,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                              onDeleted: () {
+                                _savedPostCubit.fetchSavedPosts();
+                                setState(() => _tag = "");
+                              },
                             ),
-                            itemCount: state.posts.length,
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
+                  SliverPadding(
+                    padding: const EdgeInsets.all(12),
+                    sliver: SliverList.separated(
+                      itemBuilder: (_, i) {
+                        final post = state.posts[i];
+                        return PostItemWidget(
+                          post: post,
+                          isTagActive: true,
+                          fetchTag: _setTag,
+                          tag: _tag,
+                          isLiked: state.posts.any((e) => e.id == post.id),
+                          onLike: () {
+                            if (state.posts.any((e) => e.id == post.id)) {
+                              getIt<SavedPostsCubit>().unsavePost(post);
+                            } else {
+                              getIt<SavedPostsCubit>().savePost(post);
+                            }
+                          },
+                        );
+                      },
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemCount: state.posts.length,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         );
       },
     );

@@ -87,32 +87,39 @@ class _UserPageState extends State<UserPage>
             }
           }
         },
-        child: _users.isEmpty && !_hasMoreData
-            ? const SizedBox(child: Center(child: Text('No Data')))
-            : _fristLoad
-                // TODO: Add shimmer loading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      setState(() {
-                        _currentPage = 0;
-                        _users.clear();
-                        _fristLoad = true;
-                        _hasMoreData = true;
-                      });
-                      _fetchData();
-                    },
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      slivers: [
-                        _BuildListUser(
-                          scrollController: _scrollController,
-                          users: _users,
-                          hasMoreData: _hasMoreData,
-                        ),
-                      ],
-                    ),
+        child: Builder(
+          builder: (_) {
+            if (_fristLoad) {
+              return const _BuildLoadingUser();
+            }
+
+            if (_users.isEmpty && !_hasMoreData) {
+              return const EmptyWidget(message: "no users");
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                setState(() {
+                  _currentPage = 0;
+                  _users.clear();
+                  _fristLoad = true;
+                  _hasMoreData = true;
+                });
+                _fetchData();
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  _BuildListUser(
+                    scrollController: _scrollController,
+                    users: _users,
+                    hasMoreData: _hasMoreData,
                   ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -144,14 +151,11 @@ class _BuildListUser extends StatelessWidget {
           mainAxisExtent: 286,
         ),
         itemBuilder: (context, index) {
-          if (users.isEmpty && hasMoreData) {
-            return const SizedBox(
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-
           if (index == users.length && hasMoreData) {
-            return const Center(child: CircularProgressIndicator());
+            return Material(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
+            );
           } else if (index == users.length && !hasMoreData) {
             return Card(
               margin: EdgeInsets.zero,
@@ -249,6 +253,64 @@ class _BuildUserItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BuildLoadingUser extends StatelessWidget {
+  const _BuildLoadingUser();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(12),
+          sliver: SliverGrid.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              mainAxisExtent: 286,
+            ),
+            itemBuilder: (_, index) {
+              return const Card(
+                margin: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ShimmerWidget(
+                      width: double.infinity,
+                      height: 180,
+                      radius: 16,
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ShimmerWidget(
+                            width: 50,
+                            height: 20,
+                            radius: 100,
+                          ),
+                          SizedBox(height: 6),
+                          ShimmerWidget(
+                            width: double.infinity,
+                            height: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+            itemCount: 10,
+          ),
+        ),
+      ],
     );
   }
 }
